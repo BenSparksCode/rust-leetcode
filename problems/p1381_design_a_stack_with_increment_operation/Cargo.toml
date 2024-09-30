@@ -1,0 +1,6 @@
+[package]
+name = "p1381_design_a_stack_with_increment_operation"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
