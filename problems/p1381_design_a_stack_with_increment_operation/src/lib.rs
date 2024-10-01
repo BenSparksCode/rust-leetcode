@@ -1,3 +1,5 @@
+// https://leetcode.com/problems/design-a-stack-with-increment-operation/
+
 struct CustomStack {
     stack: Vec<i32>,
     max: i32,
