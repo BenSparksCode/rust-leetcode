@@ -39,12 +39,11 @@ impl Solution {
     // Time complexity:     O(n + k)
     // Space complexity:    O(k)
     pub fn can_arrange_fast(arr: &Vec<i32>, k: i32) -> bool {
-        let mut buckets = vec![0; (k + 1) as usize];
+        let mut buckets = vec![0; k as usize];
 
         for val in arr {
-            // rem_euclid avoids negative % result, only positive r
-            let r = val.rem_euclid(k);
-            buckets[r as usize] += 1;
+            // transforms normal % behavior to euclidean modulo (only positive)
+            buckets[((val % k + k) % k) as usize] += 1;
         }
 
         // Check if 0 bucket is even
@@ -53,7 +52,7 @@ impl Solution {
         }
 
         // Check for all other buckets, each item has a match in a symmetrical bucket
-        for i in 1..=(k / 2) {
+        for i in 1..=k / 2 {
             if i == k - i {
                 // If k is even, middle bucket is own symmetrical bucket -> must be even
                 if buckets[i as usize] % 2 != 0 {
