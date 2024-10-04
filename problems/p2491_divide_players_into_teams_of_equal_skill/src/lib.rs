@@ -23,7 +23,7 @@ impl Solution {
         }
 
         // check all items have symmetrical bucket matches
-        for i in 1..=target_skill as usize / 2 {
+        for i in 1..=target_skill / 2 {
             let complement = target_skill - i;
             // Special check for single middle bucket - must be even because matches itself
             if i == complement {
