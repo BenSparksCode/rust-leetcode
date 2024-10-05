@@ -1,5 +1,5 @@
 [package]
-name = "p567_permutation_in_string"
+name = "p0567_permutation_in_string"
 version = "0.1.0"
 edition = "2021"
 
