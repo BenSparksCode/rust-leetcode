@@ -1,0 +1,6 @@
+[package]
+name = "p2696_min_str_len_after_rm_substrings"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
