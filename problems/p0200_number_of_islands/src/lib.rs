@@ -4,8 +4,9 @@ use std::collections::HashSet;
 
 struct Solution {}
 
-// TODO fix - need proper path traversal, not just left > right, top > bottom. See last test case, bottom left counts as false additional island
-
+// Time complexity:     O(n * m)
+// Space complexity:    O(n * m)
+// where {n, m} are {length, width} of grid
 impl Solution {
     pub fn num_islands(grid: Vec<Vec<char>>) -> i32 {
         // Each node will have an id of (x + 5*y)
@@ -20,12 +21,9 @@ impl Solution {
 
                 // Check if c is a candidate (1 and not explored yet)
                 if *c == '1' && !set.contains(&c_id) {
-                    if Solution::is_new_island(&set, c_id, width, max) {
-                        count += 1;
-                    }
+                    Solution::explore(&grid, &mut set, x, y);
 
-                    // Mark c as explored
-                    set.insert(c_id);
+                    count += 1;
                 }
             }
         }
@@ -33,26 +31,34 @@ impl Solution {
         count
     }
 
-    // Check if coord is a new island. If any valid squares above, below, left, or right, are marked as explored, c is part of an already counted island, so return false. Otherwise return true.
-    pub fn is_new_island(set: &HashSet<usize>, c_id: usize, width: usize, max: usize) -> bool {
-        // Above
-        if c_id > width && set.contains(&(c_id - width)) {
-            return false;
-        }
-        // Below
-        if c_id <= max - width && set.contains(&(c_id + width)) {
-            return false;
-        }
-        // Left
-        if c_id % width != 1 && set.contains(&(c_id - 1)) {
-            return false;
-        }
-        // Right
-        if c_id % width != 0 && set.contains(&(c_id + 1)) {
-            return false;
+    pub fn explore(grid: &Vec<Vec<char>>, set: &mut HashSet<usize>, x: usize, y: usize) {
+        let width: usize = grid[0].len();
+        let p: usize = y * width + x + 1;
+
+        // If we hit water or an explored coord, stop exploring
+        if grid[y][x] == '0' || set.contains(&p) {
+            return;
         }
 
-        true
+        // Mark current location as explored
+        set.insert(p);
+
+        // Above
+        if y > 0 {
+            Solution::explore(grid, set, x, y - 1);
+        }
+        // Below
+        if y < grid.len() - 1 {
+            Solution::explore(grid, set, x, y + 1);
+        }
+        // Left
+        if x > 0 {
+            Solution::explore(grid, set, x - 1, y);
+        }
+        // Right
+        if x < width - 1 {
+            Solution::explore(grid, set, x + 1, y);
+        }
     }
 }
 
