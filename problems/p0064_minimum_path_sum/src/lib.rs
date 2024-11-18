@@ -8,16 +8,20 @@ impl Solution {
     pub fn min_path_sum(grid: Vec<Vec<i32>>) -> i32 {
         let mut dists: HashMap<usize, usize> = HashMap::new();
 
-        Solution::explore(&grid, &mut dists, 0, 0, 0);
+        Solution::explore_dfs(&grid, &mut dists, 0, 0, 0);
 
         *dists.get(&(grid.len() * grid[0].len() - 1)).unwrap() as i32
     }
 
-    // NOTE: This explore implementation is NOT Dijkstra's Algorithm - gives the wrong answer sometimes. This is my
-    // first attempt using recursive exploring and a HashMap of shortest distances.
+    pub fn explore_dijkstra() {
+        // TODO
+    }
+
+    // NOTE: This explore implementation is NOT Dijkstra's Algorithm. This is DFS.
+    // My first attempt using recursive exploring and a HashMap of shortest distances.
     // x and y are the coords of current location on the grid.
     // dist is the total distance traveled so far to reach this point on the grid, not including this point.
-    pub fn explore(
+    pub fn explore_dfs(
         grid: &Vec<Vec<i32>>,
         dists: &mut HashMap<usize, usize>,
         x: usize,
@@ -34,23 +38,25 @@ impl Solution {
 
         // Set new_dist as the new lowest value for point p
         dists.insert(p, new_dist);
-        // Then continue exploring in all directions, if not at an edge
+        // Then continue exploring in all directions, if not at the edge of the grid
+        // NOTE: By putting RIGHT and DOWN explores at the top, it should bias to finding the quickest path from top left to bottom right.
 
-        // Up
-        if y > 0 {
-            Solution::explore(grid, dists, x, y - 1, new_dist);
+        // Right
+        if x < grid[0].len() - 1 {
+            Solution::explore_dfs(grid, dists, x + 1, y, new_dist);
         }
         // Down
         if y < grid.len() - 1 {
-            Solution::explore(grid, dists, x, y + 1, new_dist);
+            Solution::explore_dfs(grid, dists, x, y + 1, new_dist);
+        }
+
+        // Up
+        if y > 0 {
+            Solution::explore_dfs(grid, dists, x, y - 1, new_dist);
         }
         // Left
         if x > 0 {
-            Solution::explore(grid, dists, x - 1, y, new_dist);
-        }
-        // Right
-        if x < grid[0].len() - 1 {
-            Solution::explore(grid, dists, x + 1, y, new_dist);
+            Solution::explore_dfs(grid, dists, x - 1, y, new_dist);
         }
     }
 }
