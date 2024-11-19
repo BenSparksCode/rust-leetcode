@@ -1,11 +1,25 @@
 // https://leetcode.com/problems/minimum-path-sum/
 
-use std::collections::HashMap;
+use std::{
+    cmp::Reverse,
+    collections::{BinaryHeap, HashMap},
+};
 
 struct Solution {}
 
 impl Solution {
+    // Solution using Dijkstra search
     pub fn min_path_sum(grid: Vec<Vec<i32>>) -> i32 {
+        let mut dists: HashMap<usize, usize> = HashMap::new();
+        let mut heap: BinaryHeap<Reverse<(usize, usize, usize)>> = BinaryHeap::new();
+
+        Solution::explore_dijkstra(&grid, &mut dists, &mut heap);
+
+        *dists.get(&(grid.len() * grid[0].len() - 1)).unwrap() as i32
+    }
+
+    // Solution using DFS search
+    pub fn min_path_sum_dfs(grid: Vec<Vec<i32>>) -> i32 {
         let mut dists: HashMap<usize, usize> = HashMap::new();
 
         Solution::explore_dfs(&grid, &mut dists, 0, 0, 0);
@@ -13,8 +27,52 @@ impl Solution {
         *dists.get(&(grid.len() * grid[0].len() - 1)).unwrap() as i32
     }
 
-    pub fn explore_dijkstra() {
-        // TODO
+    // Dijkstra's Algorithm implementation
+    pub fn explore_dijkstra(
+        grid: &Vec<Vec<i32>>,
+        dists: &mut HashMap<usize, usize>,
+        heap: &mut BinaryHeap<Reverse<(usize, usize, usize)>>,
+    ) {
+        // Heap Item format: (dist, x, y)
+
+        // Add starting tile to heap and dists map
+        heap.push(Reverse((grid[0][0] as usize, 0, 0)));
+        dists.insert(0, grid[0][0] as usize);
+
+        while let Some(Reverse((curr_dist, x, y))) = heap.pop() {
+            let p = y * grid[0].len() + x;
+
+            if curr_dist > *dists.get(&p).unwrap_or(&usize::MAX) {
+                continue;
+            }
+
+            // Then add adjacent nodes with their distances to the heap:
+
+            // Down
+            if y < grid.len() - 1 {
+                let (x_new, y_new) = (x, y + 1);
+
+                let dist_new = curr_dist + grid[y_new][x_new] as usize;
+                let p_new = y_new * grid[0].len() + x_new;
+                if dist_new < *dists.get(&p_new).unwrap_or(&usize::MAX) {
+                    dists.insert(p_new, dist_new);
+                    heap.push(Reverse((dist_new, x_new, y_new)));
+                }
+            }
+            // Right
+            if x < grid[0].len() - 1 {
+                let (x_new, y_new) = (x + 1, y);
+
+                let dist_new = curr_dist + grid[y_new][x_new] as usize;
+                let p_new = y_new * grid[0].len() + x_new;
+                if dist_new < *dists.get(&p_new).unwrap_or(&usize::MAX) {
+                    dists.insert(p_new, dist_new);
+                    heap.push(Reverse((dist_new, x_new, y_new)));
+                }
+            }
+
+            // NOTE: Instructions say only DOWN or RIGHT moves allowed, so UP and LEFT are disabled
+        }
     }
 
     // NOTE: This explore implementation is NOT Dijkstra's Algorithm. This is DFS.
@@ -50,14 +108,7 @@ impl Solution {
             Solution::explore_dfs(grid, dists, x, y + 1, new_dist);
         }
 
-        // Up
-        if y > 0 {
-            Solution::explore_dfs(grid, dists, x, y - 1, new_dist);
-        }
-        // Left
-        if x > 0 {
-            Solution::explore_dfs(grid, dists, x - 1, y, new_dist);
-        }
+        // NOTE: Instructions say only DOWN or RIGHT moves allowed, so UP and LEFT are disabled
     }
 }
 
